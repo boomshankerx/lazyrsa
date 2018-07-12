@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+FQDN="$1"
+CERT_FILENAME="wildcard.${FQDN}"
+CERT_COMMONNAME="*.${FQDN}"
+
+./easyrsa --batch --req-cn="${CERT_COMMONNAME}" gen-req ${CERT_FILENAME} nopass
+./easyrsa --batch sign-req server ${CERT_FILENAME}
+[[ ! -f pki/dh.pem ]] || ./easyrsa --batch gen-dh

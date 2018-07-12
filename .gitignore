@@ -1,0 +1,8 @@
+*.swp
+certs/
+pki/
+x509-types/
+.old/
+vars*
+easyrsa
+openssl-easyrsa.cnf

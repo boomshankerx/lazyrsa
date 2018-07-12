@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+[[ -d certs ]] || mkdir certs
+rm certs/*
+
+find pki -name "*.crt" -exec cp -v {} certs \;
+find pki -name "*.key" -exec cp -v {} certs \;
+find pki -path "pki/certs_*" -prune -o -name "*.pem" -exec cp -v {} certs \;
+
+cd certs
+for cert in *.crt; do
+    if [[ "$cert" != "ca.crt" ]]; then
+        ext="${cert##*.}"
+        filename="${cert%.*}"
+        echo "Assembling $filename.pem" 
+        cat $filename.crt $filename.key dh.pem > $filename.pem
+    fi
+done
+cd ..
