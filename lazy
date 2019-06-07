@@ -23,8 +23,8 @@ function client() {
         echo "Usage: client <hostname>"
         return
     fi
-    FQDN="$hostname.$domain"
-   ./easyrsa build-client-full $FQDN nopass
+    fqdn="$hostname.$domain"
+   ./easyrsa build-client-full $fqdn nopass
 }
 
 function confirm() {
@@ -54,14 +54,14 @@ function delete() {
     cleanup
 }
 
-function reset() {
+function init() {
     if [[ confirm ]]; then
         ./easyrsa --batch init-pki
         ./easyrsa build-ca nopass
         ./easyrsa gen-dh
     fi
-}
 
+}
 function server() {
     hostname="$1"
     if [[ -z "$hostname" ]]; then
@@ -69,17 +69,18 @@ function server() {
         return
     fi
     fqdn="$hostname.$domain"
+    echo $fqdn
    ./easyrsa build-server-full $fqdn nopass
 }
 
 function print_help()
 {
 	printf 'Usage: [--domain <arg>] [-h|--help] <command> <hostname> \n'
-    printf 'client <hostname> | Generate new client certificate\n'
-    printf 'server <hostname> | Generate new server certificate\n\n'
     printf 'cleanup           | Cleanup folders\n'
+    printf 'client <hostname> | Generate new client certificate\n'
     printf 'gather            | Gather generated certificates into certs folder and combine into pem\n'
-    printf 'reset             | Reset easyrsa\n'
+    printf 'init              | Reset easyrsa\n'
+    printf 'server <hostname> | Generate new server certificate\n\n'
 }
 
 if [[ $# -eq 0 ]]; then
@@ -113,6 +114,7 @@ eval set -- "$PARAMS"
 
 # Process Commands
 while (( "$#" )); do
+    echo $@
     case "$1" in
         "cleanup")
             cleanup
@@ -128,8 +130,8 @@ while (( "$#" )); do
             delete $hostname
             shift 2
             ;;
-        "reset")
-            reset
+        "init")
+            init
             shift
             ;;
         "server")
