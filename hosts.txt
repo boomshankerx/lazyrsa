@@ -1,6 +1,0 @@
-crm
-ipmi-lab
-ipmi-nas
-lab
-nas
-otrs

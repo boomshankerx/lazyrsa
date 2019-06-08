@@ -1,8 +1,9 @@
 *.swp
-certs/
-pki/
-x509-types/
 .old/
-vars*
+certs/
 easyrsa
+hosts.txt
 openssl-easyrsa.cnf
+pki/
+vars*
+x509-types/

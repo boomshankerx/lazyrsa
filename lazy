@@ -3,6 +3,16 @@
 PARAMS=""
 domain=techg
 
+function batch() {
+    while read host ;do
+        fqdn="$host.$domain"
+        printf '\n## Generating %s\n' $fqdn
+        if [[ "$host" != ""  && -z $1 ]]; then
+            ./easyrsa --batch build-client-full $fqdn nopass
+        fi
+    done < hosts.txt
+}
+
 function cleanup() {
     for i in pki/certs_by_serial/*; do
         file=$(basename "$i")
@@ -54,6 +64,10 @@ function delete() {
     cleanup
 }
 
+function gather() {
+    ./gather
+}
+
 function init() {
     if [[ confirm ]]; then
         ./easyrsa --batch init-pki
@@ -76,6 +90,7 @@ function server() {
 function print_help()
 {
 	printf 'Usage: [--domain <arg>] [-h|--help] <command> <hostname> \n'
+    printf 'batch             | Batch create client certificates listed in hosts.txt\n'
     printf 'cleanup           | Cleanup folders\n'
     printf 'client <hostname> | Generate new client certificate\n'
     printf 'gather            | Gather generated certificates into certs folder and combine into pem\n'
@@ -116,32 +131,33 @@ eval set -- "$PARAMS"
 while (( "$#" )); do
     echo $@
     case "$1" in
+        "batch")
+            batch;shift;;
         "cleanup")
-            cleanup
-            shift
-            ;;
+            cleanup;shift;;
         "client")
+            [[ -z $2 ]] && shift
             hostname=$2
             client $hostname
             shift 2
             ;;
         "delete")
+            [[ -z $2 ]] && shift
             hostname=$2
             delete $hostname
             shift 2
             ;;
+        "gather")
+            gather;shift;;
         "init")
-            init
-            shift
-            ;;
+            init;shift;;
         "server")
+            [[ -z $2 ]] && shift
             hostname=$2
             server $hostname
             shift 2
             ;;
         *)
-            print_help
-            shift
-            ;;
+            print_help;shift;;
     esac
 done
